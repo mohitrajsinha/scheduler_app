@@ -1,9 +1,10 @@
+import 'package:android_app/pages/home_page.dart';
+import 'package:android_app/pages/login_page.dart';
+import 'package:android_app/pages/profile_page.dart';
+import 'package:android_app/pages/signup_page.dart';
+import 'package:android_app/utils/routes.dart';
+import 'package:android_app/widgets/themes.dart';
 import 'package:flutter/material.dart';
-import 'package:scheduler_app/pages/home_page.dart';
-import 'package:scheduler_app/pages/login_page.dart';
-import 'package:scheduler_app/pages/signup_page.dart';
-import 'package:scheduler_app/utils/routes.dart';
-import 'package:scheduler_app/widgets/themes.dart';
 
 void main() {
   runApp(myapp());
