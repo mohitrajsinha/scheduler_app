@@ -1,11 +1,14 @@
 import 'dart:html';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:android_app/models/user.dart';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:velocity_x/velocity_x.dart';
+import '../api/sheets/user_sheets_api.dart';
+import '../widgets/user_form_widget.dart';
+
 
 import 'package:syncfusion_flutter_calendar/calendar.dart';
-
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -13,43 +16,43 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: context.theme.canvasColor,
-        floatingActionButton: FloatingActionButton(
-          backgroundColor: context.theme.buttonColor,
-          onPressed: () {},
-          child: Icon(
-            CupertinoIcons.phone_circle_fill,
-            color: Colors.white,
-          ),
-        ).safeArea(),
-        appBar: AppBar(
-          actions: <Widget>[
-            IconButton(
-              icon: const Icon(Icons.person_outline_rounded),
-              tooltip: 'Your Profile',
-              onPressed: () {},
-            ).p20(),
-          ],
-          leading: IconButton(
-            icon: const Icon(Icons.menu),
-            tooltip: 'Menu Icon',
+      backgroundColor: context.theme.canvasColor,
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: context.theme.buttonColor,
+        onPressed: () {},
+        child: const Icon(
+          CupertinoIcons.phone_circle_fill,
+          color: Colors.white,
+        ),
+      ).safeArea(),
+      appBar: AppBar(
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.person_outline_rounded),
+            tooltip: 'Your Profile',
             onPressed: () {},
           ).p20(),
-          toolbarHeight: 100,
-          elevation: 10,
-          shadowColor: Colors.white,
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.only(
-                bottomRight: Radius.circular(25),
-                bottomLeft: Radius.circular(25)),
-          ),
-          backgroundColor: context.canvasColor,
-          centerTitle: true,
-          title:
-              "Hi! Welcome to the VIPS event management".text.bold.xl3.make(),
-          foregroundColor: context.accentColor,
+        ],
+        leading: IconButton(
+          icon: const Icon(Icons.menu),
+          tooltip: 'Menu Icon',
+          onPressed: () {},
+        ).p20(),
+        toolbarHeight: 100,
+        elevation: 10,
+        shadowColor: Colors.white,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+              bottomRight: Radius.circular(25),
+              bottomLeft: Radius.circular(25)),
         ),
-        body: Column(children: [
+        backgroundColor: context.canvasColor,
+        centerTitle: true,
+        title: "Hi! Welcome to the VIPS event management".text.bold.xl3.make(),
+        foregroundColor: context.accentColor,
+      ),
+      body: SingleChildScrollView(
+        child: Column(children: [
           SfCalendar(
               view: CalendarView.month,
               showNavigationArrow: true,
@@ -60,10 +63,30 @@ class HomePage extends StatelessWidget {
                 borderRadius: const BorderRadius.all(Radius.circular(10)),
                 shape: BoxShape.rectangle,
               )).h64(context).p24(),
-          ElevatedButton(
-            child: "To Book The Venue Click Here".text.bold.xl3.make(),
-            onPressed: _launchUrl,
+          SizedBox(
+            height: 40,
+            child: "Form".text.xl4.make(),
+          ),
+          SizedBox(
+            height: 1200,
+            child: CreateSheetsPage(User),
           )
-        ])).safeArea();
+        ]),
+      ),
+    ).safeArea();
   }
+}
+
+class CreateSheetsPage extends StatelessWidget {
+  const CreateSheetsPage(Type user, {super.key});
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+        body: Container(
+            alignment: Alignment.center,
+            padding: EdgeInsets.all(32),
+            child: UserFormWidget(onSavedUser: (user) async {
+              await UserSheetsApi.insert([user.toJson()]);
+            })),
+      );
 }
