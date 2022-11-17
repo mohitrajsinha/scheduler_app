@@ -6,15 +6,8 @@ import 'package:velocity_x/velocity_x.dart';
 
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
-final Uri _url = Uri.parse('https://forms.gle/j6c6sp2LqqHgzT1s6');
 
 class HomePage extends StatelessWidget {
-  Future<void> _launchUrl() async {
-    if (!await launchUrl(_url)) {
-      throw 'Could not launch $_url';
-    }
-  }
-
   const HomePage({super.key});
 
   @override
