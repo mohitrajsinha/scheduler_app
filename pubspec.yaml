@@ -44,7 +44,7 @@ dependencies:
   cloud_firestore: ^4.0.5
   intl: ^0.17.0
   gsheets: ^0.4.2
-  
+  animated_snack_bar: ^0.2.0
   
 
 dev_dependencies:
