@@ -1,6 +1,12 @@
+import 'package:android_app/pages/home_page.dart';
 import 'package:android_app/pages/signup_page.dart';
+import 'package:animated_snack_bar/animated_snack_bar.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:top_snackbar_flutter/custom_snack_bar.dart';
 import 'package:velocity_x/velocity_x.dart';
+import 'dart:developer';
+import 'package:form_validator/form_validator.dart';
 
 import '../utils/routes.dart';
 
@@ -13,17 +19,46 @@ class _LoginPageState extends State<LoginPage> {
   String name = "";
   bool ChangeButton = false;
   final _formkey = GlobalKey<FormState>();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+
+  
 
   movetohome(BuildContext context) async {
     if (_formkey.currentState!.validate()) {
       setState(() {
         ChangeButton = true;
       });
-      await Future.delayed(Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 1));
       await Navigator.pushNamed(context, MyRoutes.homeRoute);
       setState(() {
         ChangeButton = false;
       });
+    }
+  }
+  
+  void login() async {
+    String email = emailController.text.trim();
+    String password = passwordController.text.trim();
+    if (email == "" || password == "") {
+      log("Please fill all the fields");
+      AnimatedSnackBar.material(
+    'Please fill all the fields',
+    type: AnimatedSnackBarType.info,
+    // mobileSnackBarPosition: MobileSnackBarPosition.top, // Position of snackbar on mobile devices
+    desktopSnackBarPosition: DesktopSnackBarPosition.topCenter, // Position of snackbar on desktop devices
+).show(context);
+    }
+      else {
+      try {
+        UserCredential userCredential = await FirebaseAuth.instance
+            .signInWithEmailAndPassword(email: email, password: password);
+        if (userCredential != null) {
+          movetohome(context);
+        }
+      } on FirebaseAuthException catch (ex) {
+        log(ex.code.toString());
+      }
     }
   }
 
@@ -39,17 +74,17 @@ class _LoginPageState extends State<LoginPage> {
             "lib/assets/images/login.jpg",
             // fit: BoxFit.contain,
           ).w32(context).p32(),
-          SizedBox(
+          const SizedBox(
             height: 20.0,
           ),
           Text(
             "Welcome $name",
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.bold,
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 20.0,
           ),
           Padding(
@@ -57,7 +92,7 @@ class _LoginPageState extends State<LoginPage> {
                 const EdgeInsets.symmetric(vertical: 16.0, horizontal: 600.0),
             child: Column(children: [
               TextFormField(
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: "Enter UserName",
                   labelText: "UserName",
                 ),
@@ -73,8 +108,22 @@ class _LoginPageState extends State<LoginPage> {
                 }),
               ),
               TextFormField(
+                decoration: const InputDecoration(
+                  hintText: "Enter email",
+                  labelText: "Email",
+                ),
+                // validator: (value) {
+                //   if (value == null || value.isEmpty || !value.contains('@')) {
+                //     return "Email cannot be empty";
+                //   }
+                //   return null;
+                // },
+                validator: ValidationBuilder().email().maxLength(50).build(),
+                controller: emailController,
+              ),
+              TextFormField(
                 obscureText: true,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                     hintText: "Enter Password", labelText: "Password"),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -84,23 +133,34 @@ class _LoginPageState extends State<LoginPage> {
                   }
                   return null;
                 },
+                controller: passwordController,
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20.0,
               ),
               Material(
                 borderRadius: BorderRadius.circular(ChangeButton ? 50 : 8),
                 color: context.theme.buttonColor,
                 child: InkWell(
-                  onTap: () => movetohome(context),
+                  onTap: () {
+                    
+                    login();
+                    if (_formkey.currentState!.validate()) {
+      // If the form is valid, display a snackbar. In the real world,
+      // you'd often call a server or save the information in a database.
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Processing Data')),
+      );
+    }
+                  },
                   child: AnimatedContainer(
-                    duration: Duration(seconds: 1),
+                    duration: const Duration(seconds: 1),
                     width: ChangeButton ? 50 : 150,
                     height: 50,
                     alignment: Alignment.center,
                     child: ChangeButton
-                        ? Icon(Icons.done, color: Colors.white)
-                        : Text("Login",
+                        ? const Icon(Icons.done, color: Colors.white)
+                        : const Text("Login",
                             style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 20,
@@ -108,7 +168,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20.0,
               ),
               TextButton(
@@ -120,7 +180,7 @@ class _LoginPageState extends State<LoginPage> {
                     context.accentColor,
                   ),
                 ),
-                child: Text("Sign Up").text.headline6(context).make(),
+                child: const Text("Sign Up").text.headline6(context).make(),
               ),
             ]),
           )
